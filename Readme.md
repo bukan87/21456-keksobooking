@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [bukan87 Ильин](https://up.htmlacademy.ru/javascript/11/user/21456).
-* Наставник: `Неизвестно`.
+* Наставник: Жека Лепёшкин.
 
 ---
 
