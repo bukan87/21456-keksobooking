@@ -1,4 +1,14 @@
 'use strict';
+var SIMILAR_ADS_COUNT = 8;
+var AVATARS = ['user01.png', 'user02.png', 'user03.png', 'user04.png', 'user05.png', 'user06.png', 'user07.png', 'user08.png'];
+var HOUSING_TYPES = ['flat', 'house', 'bungalo'];
+var TIMES = ['12:00', '13:00', '14:00'];
+var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var HOUSING_TYPES_INFO = {
+  flat: {ru: 'Квартира'},
+  bungalo: {ru: 'Бунгало'},
+  house: {ru: 'Дом'}
+};
 
 /**
  * Генерация случайного числа в диапозоне
@@ -150,12 +160,7 @@ var createAdInfoNodeByTemplate = function (ad) {
   adNode.querySelector('h3').textContent = ad.offer.title;
   adNode.querySelector('p small').textContent = ad.offer.address;
   adNode.querySelector('.popup__price').textContent = ad.offer.price + '₽/ночь';
-  var TYPES = {
-    flat: {ru: 'Квартира'},
-    bungalo: {ru: 'Бунгало'},
-    house: {ru: 'Дом'}
-  };
-  adNode.querySelector('h4').textContent = TYPES[ad.offer.type].ru;
+  adNode.querySelector('h4').textContent = HOUSING_TYPES_INFO[ad.offer.type].ru;
   adNode.querySelector('p:nth-child(7)').textContent = ad.offer.rooms + ' для ' + ad.offer.guests + ' гостей';
   adNode.querySelector('p:nth-child(8)').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
   fillFeatures(adNode.querySelector('.popup__features'), ad.offer.features);
@@ -164,12 +169,7 @@ var createAdInfoNodeByTemplate = function (ad) {
   return adNode;
 };
 
-var SIMILAR_ADS_COUNT = 8;
-var AVATARS = ['user01.png', 'user02.png', 'user03.png', 'user04.png', 'user05.png', 'user06.png', 'user07.png', 'user08.png'];
 var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var HOUSING_TYPES = ['flat', 'house', 'bungalo'];
-var TIMES = ['12:00', '13:00', '14:00'];
-var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var similarAds = createRandomAds(SIMILAR_ADS_COUNT);
 document.querySelector('.map').classList.remove('map--faded');
 generateButtonsByAds(document.querySelector('.map .map__pins'), similarAds);
