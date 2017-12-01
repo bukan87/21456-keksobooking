@@ -183,7 +183,7 @@ var fillAdCard = function (ad) {
  * @param {Object} evt контекст события
  * @constructor
  */
-var OnAdCardEscPress = function (evt) {
+var onAdCardEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYBOARD) {
     hideAdCard();
   }
@@ -194,7 +194,7 @@ var OnAdCardEscPress = function (evt) {
  */
 var showAdCard = function () {
   adCardNode.classList.remove('hidden');
-  document.addEventListener('keydown', OnAdCardEscPress);
+  document.addEventListener('keydown', onAdCardEscPress);
 };
 
 /**
@@ -205,20 +205,20 @@ var hideAdCard = function () {
   if (activeAdsButton) {
     activeAdsButton.classList.remove('map__pin--active');
   }
-  document.removeEventListener('keydown', OnAdCardEscPress);
+  document.removeEventListener('keydown', onAdCardEscPress);
 };
 
-var map = document.querySelector('.map');
-// Создадим карточку объявления из шаблона
-var adCardNode = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
-adCardNode.classList.add('hidden');
-adCardNode.querySelector('.popup__close').addEventListener('click', function () {
+/**
+ * Отлов нажатия на крестик в карточке объявления
+ */
+var onAdCardPopupCloseClick = function () {
   hideAdCard();
-});
-adCardNode.querySelector('.popup__close').addEventListener('keydown', OnAdCardEscPress);
-map.insertBefore(adCardNode, map.querySelector('.map__filters-container'));
+};
 
-map.querySelector('.map__pin--main').addEventListener('mouseup', function () {
+/**
+ * Отлов нажатия на главную кнопку на карте
+ */
+var onMapPinMainMouseUp = function () {
   map.classList.remove('map--faded');
   var similarAds = createRandomAds(SIMILAR_ADS_COUNT);
   generateButtonsByAds(map.querySelector('.map__pins'), similarAds);
@@ -228,4 +228,18 @@ map.querySelector('.map__pin--main').addEventListener('mouseup', function () {
   for (var i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = false;
   }
-});
+  map.querySelector('.map__pin--main').removeEventListener('mouseup', onMapPinMainMouseUp);
+};
+
+var map = document.querySelector('.map');
+// Создадим карточку объявления из шаблона
+var adCardNode = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
+if (adCardNode) {
+  adCardNode.classList.add('hidden');
+  adCardNode.querySelector('.popup__close').addEventListener('click', onAdCardPopupCloseClick);
+  adCardNode.querySelector('.popup__close').addEventListener('keydown', onAdCardEscPress);
+}
+if (map) {
+  map.insertBefore(adCardNode, map.querySelector('.map__filters-container'));
+  map.querySelector('.map__pin--main').addEventListener('mouseup', onMapPinMainMouseUp);
+}
