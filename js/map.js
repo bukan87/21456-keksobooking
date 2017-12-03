@@ -9,6 +9,10 @@ var HOUSING_TYPES_INFO = {
   bungalo: {ru: 'Бунгало'},
   house: {ru: 'Дом'}
 };
+var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
+var ESC_KEYBOARD = 27;
+var similarAds = [];
+var activeAdsButton;
 
 /**
  * Генерация случайного числа в диапозоне
@@ -128,7 +132,7 @@ var createButton = function (ad) {
 var generateButtonsByAds = function (context, ads) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < ads.length; i++) {
-    fragment.appendChild(createButton(similarAds[i]));
+    fragment.appendChild(createButton(ads[i]));
   }
   context.appendChild(fragment);
 };
@@ -151,27 +155,106 @@ var fillFeatures = function (context, features) {
 };
 
 /**
- * Создание ноды на основе шаблона и объявления
- * @param {Object} ad объявление, на основе которого нужно сделать объявление
- * @return {Node} Созданная нода объявления
+ * Заполнение и отображение карточки объявления
+ * @param {Object} ad объявление, данные которого нужно заполнить
  */
-var createAdInfoNodeByTemplate = function (ad) {
-  var adNode = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
-  adNode.querySelector('h3').textContent = ad.offer.title;
-  adNode.querySelector('p small').textContent = ad.offer.address;
-  adNode.querySelector('.popup__price').textContent = ad.offer.price + '₽/ночь';
-  adNode.querySelector('h4').textContent = HOUSING_TYPES_INFO[ad.offer.type].ru;
-  adNode.querySelector('p:nth-child(7)').textContent = ad.offer.rooms + ' для ' + ad.offer.guests + ' гостей';
-  adNode.querySelector('p:nth-child(8)').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
-  fillFeatures(adNode.querySelector('.popup__features'), ad.offer.features);
-  adNode.querySelector('p:nth-child(10)').textContent = ad.offer.description;
-  adNode.querySelector('.popup__avatar').src = ad.author.avatar;
-  return adNode;
+var fillAdCard = function (ad) {
+  adCardNode.querySelector('h3').textContent = ad.offer.title;
+  adCardNode.querySelector('p small').textContent = ad.offer.address;
+  adCardNode.querySelector('.popup__price').textContent = ad.offer.price + '₽/ночь';
+  adCardNode.querySelector('h4').textContent = HOUSING_TYPES_INFO[ad.offer.type].ru;
+  adCardNode.querySelector('p:nth-child(7)').textContent = ad.offer.rooms + ' для ' + ad.offer.guests + ' гостей';
+  adCardNode.querySelector('p:nth-child(8)').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
+  fillFeatures(adCardNode.querySelector('.popup__features'), ad.offer.features);
+  adCardNode.querySelector('p:nth-child(10)').textContent = ad.offer.description;
+  adCardNode.querySelector('.popup__avatar').src = ad.author.avatar;
 };
 
-var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var similarAds = createRandomAds(SIMILAR_ADS_COUNT);
-document.querySelector('.map').classList.remove('map--faded');
-generateButtonsByAds(document.querySelector('.map .map__pins'), similarAds);
-var map = document.querySelector('.map .map__pins');
-map.insertBefore(createAdInfoNodeByTemplate(similarAds[0]), map.querySelector('.map__filters-container'));
+/**
+ * Отлов нажатия на кнопку ESC
+ * @param {Object} evt контекст события
+ * @constructor
+ */
+var onAdCardEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYBOARD) {
+    hideAdCard();
+  }
+};
+
+/**
+ * Отображение карточки объявления
+ */
+var showAdCard = function () {
+  adCardNode.classList.remove('hidden');
+  document.addEventListener('keydown', onAdCardEscPress);
+};
+
+/**
+ * Скрытие карточки объявления
+ */
+var hideAdCard = function () {
+  adCardNode.classList.add('hidden');
+  if (activeAdsButton) {
+    activeAdsButton.classList.remove('map__pin--active');
+  }
+  document.removeEventListener('keydown', onAdCardEscPress);
+};
+
+/**
+ * Отлов нажатия на крестик в карточке объявления
+ */
+var onAdCardPopupCloseClick = function () {
+  hideAdCard();
+};
+
+/**
+ * Отлов нажатия на главную кнопку на карте
+ */
+var onMapPinMainMouseUp = function () {
+  map.classList.remove('map--faded');
+  similarAds = createRandomAds(SIMILAR_ADS_COUNT);
+  generateButtonsByAds(map.querySelector('.map__pins'), similarAds);
+  var noticeForm = document.querySelector('.notice__form');
+  noticeForm.classList.remove('notice__form--disabled');
+  var fieldsets = noticeForm.querySelectorAll('fieldset');
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].disabled = false;
+  }
+  map.querySelector('.map__pin--main').removeEventListener('mouseup', onMapPinMainMouseUp);
+};
+
+var map = document.querySelector('.map');
+// Создадим карточку объявления из шаблона
+var adCardNode = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
+if (adCardNode) {
+  adCardNode.classList.add('hidden');
+  adCardNode.querySelector('.popup__close').addEventListener('click', onAdCardPopupCloseClick);
+  adCardNode.querySelector('.popup__close').addEventListener('keydown', onAdCardEscPress);
+}
+if (map) {
+  map.insertBefore(adCardNode, map.querySelector('.map__filters-container'));
+  map.querySelector('.map__pin--main').addEventListener('mouseup', onMapPinMainMouseUp);
+  // Делегирование нажатия кнопок на карте
+  var mapPins = map.querySelector('.map__pins');
+  if (mapPins) {
+    mapPins.addEventListener('click', function (evt) {
+      if (activeAdsButton) {
+        activeAdsButton.classList.remove('map__pin--active');
+      }
+      evt.target.classList.add('map__pin--active');
+      var pressedButton;
+      var numOfPressedButton;
+      var buttons = mapPins.querySelectorAll('.map__pin');
+      for (var i = 1; i < buttons.length; i++) {
+        if (evt.target === buttons[i]) {
+          pressedButton = evt.target;
+          numOfPressedButton = i - 1;
+          break;
+        }
+      }
+      fillAdCard(similarAds[numOfPressedButton]);
+      showAdCard();
+      activeAdsButton = pressedButton;
+    });
+  }
+}
