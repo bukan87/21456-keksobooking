@@ -11,6 +11,8 @@ var HOUSING_TYPES_INFO = {
 };
 var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var ESC_KEYBOARD = 27;
+var similarAds = [];
+var activeAdsButton;
 
 /**
  * Генерация случайного числа в диапозоне
@@ -100,7 +102,6 @@ var createRandomAds = function (adsCount) {
   return adsArray;
 };
 
-var activeAdsButton;
 /**
  * Создание кнопки похожего объявления на основе объявления
  * @param {Object} ad объявление
@@ -119,15 +120,6 @@ var createButton = function (ad) {
   img.width = IMG_WIDTH;
   img.height = IMG_HEIGHT;
   img.draggable = false;
-  button.addEventListener('click', function () {
-    if (activeAdsButton) {
-      activeAdsButton.classList.remove('map__pin--active');
-    }
-    button.classList.add('map__pin--active');
-    fillAdCard(ad);
-    showAdCard();
-    activeAdsButton = button;
-  });
   button.appendChild(img);
   return button;
 };
@@ -220,7 +212,7 @@ var onAdCardPopupCloseClick = function () {
  */
 var onMapPinMainMouseUp = function () {
   map.classList.remove('map--faded');
-  var similarAds = createRandomAds(SIMILAR_ADS_COUNT);
+  similarAds = createRandomAds(SIMILAR_ADS_COUNT);
   generateButtonsByAds(map.querySelector('.map__pins'), similarAds);
   var noticeForm = document.querySelector('.notice__form');
   noticeForm.classList.remove('notice__form--disabled');
@@ -242,4 +234,27 @@ if (adCardNode) {
 if (map) {
   map.insertBefore(adCardNode, map.querySelector('.map__filters-container'));
   map.querySelector('.map__pin--main').addEventListener('mouseup', onMapPinMainMouseUp);
+  // Делегирование нажатия кнопок на карте
+  var mapPins = map.querySelector('.map__pins');
+  if (mapPins) {
+    mapPins.addEventListener('click', function (evt) {
+      if (activeAdsButton) {
+        activeAdsButton.classList.remove('map__pin--active');
+      }
+      evt.target.classList.add('map__pin--active');
+      var pressedButton;
+      var numOfPressedButton;
+      var buttons = mapPins.querySelectorAll('.map__pin');
+      for (var i = 1; i < buttons.length; i++) {
+        if (evt.target === buttons[i]) {
+          pressedButton = evt.target;
+          numOfPressedButton = i - 1;
+          break;
+        }
+      }
+      fillAdCard(similarAds[numOfPressedButton]);
+      showAdCard();
+      activeAdsButton = pressedButton;
+    });
+  }
 }
