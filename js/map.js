@@ -271,16 +271,17 @@ if (map) {
   var mapPins = map.querySelector('.map__pins');
   if (mapPins) {
     mapPins.addEventListener('click', function (evt) {
+      var pressedButton = evt.target.parentNode;
       var buttons = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
       for (var i = 0; i < buttons.length; i++) {
         if (evt.target === buttons[i].childNodes[0]) {
           if (activeAdsButton) {
             activeAdsButton.classList.remove('map__pin--active');
           }
-          evt.target.classList.add('map__pin--active');
+          pressedButton.classList.add('map__pin--active');
           fillAdCard(similarAds[i]);
           showAdCard();
-          activeAdsButton = evt.target;
+          activeAdsButton = pressedButton;
           break;
         }
       }
