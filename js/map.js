@@ -5,14 +5,47 @@ var HOUSING_TYPES = ['flat', 'house', 'bungalo'];
 var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var HOUSING_TYPES_INFO = {
-  flat: {ru: 'Квартира'},
-  bungalo: {ru: 'Бунгало'},
-  house: {ru: 'Дом'}
+  flat: {
+    ru: 'Квартира',
+    minCost: 1000
+  },
+  bungalo: {
+    ru: 'Бунгало',
+    minCost: 0
+  },
+  house: {
+    ru: 'Дом',
+    minCost: 5000
+  },
+  palace: {
+    minCost: 10000
+  }
+};
+// Мапинг соответствия количества гостей по умолчанию от количества комнат
+var ROOM_PLACES_MAPPING = {
+  1: '1',
+  2: '2',
+  3: '3',
+  100: '0'
 };
 var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var ESC_KEYBOARD = 27;
 var similarAds = [];
 var activeAdsButton;
+
+/**
+ * Выбор элмента в Селекте по значению
+ * @param {Element} select Нода, в которой нужно выбрать элемент
+ * @param {string} value значение
+ */
+var selectByValue = function (select, value) {
+  for (var i = 0; i < select.options.length; i++) {
+    if (select[i].value === value) {
+      select.options.selectedIndex = i;
+      break;
+    }
+  }
+};
 
 /**
  * Генерация случайного числа в диапозоне
@@ -238,23 +271,69 @@ if (map) {
   var mapPins = map.querySelector('.map__pins');
   if (mapPins) {
     mapPins.addEventListener('click', function (evt) {
-      if (activeAdsButton) {
-        activeAdsButton.classList.remove('map__pin--active');
-      }
-      evt.target.classList.add('map__pin--active');
-      var pressedButton;
-      var numOfPressedButton;
-      var buttons = mapPins.querySelectorAll('.map__pin');
-      for (var i = 1; i < buttons.length; i++) {
-        if (evt.target === buttons[i]) {
-          pressedButton = evt.target;
-          numOfPressedButton = i - 1;
+      var pressedButton = evt.target.parentNode;
+      var buttons = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+      for (var i = 0; i < buttons.length; i++) {
+        if (evt.target === buttons[i].childNodes[0]) {
+          if (activeAdsButton) {
+            activeAdsButton.classList.remove('map__pin--active');
+          }
+          pressedButton.classList.add('map__pin--active');
+          fillAdCard(similarAds[i]);
+          showAdCard();
+          activeAdsButton = pressedButton;
           break;
         }
       }
-      fillAdCard(similarAds[numOfPressedButton]);
-      showAdCard();
-      activeAdsButton = pressedButton;
     });
   }
+}
+// ВАШЕ ОБЪЯВЛЕНИЕ
+var notice = document.querySelector('.notice');
+// Зависимоть даты въезда от даты выезда и наоборот
+var timein = notice.querySelector('#timein');
+var timeout = notice.querySelector('#timeout');
+if (timein) {
+  timein.addEventListener('change', function (evt) {
+    timeout.options.selectedIndex = evt.target.options.selectedIndex;
+  });
+}
+if (timeout) {
+  timeout.addEventListener('change', function (evt) {
+    timein.options.selectedIndex = evt.target.options.selectedIndex;
+  });
+}
+// зависимоть минимальной цены на жильё от его типа
+var type = notice.querySelector('#type');
+if (type) {
+  type.addEventListener('change', function (evt) {
+    notice.querySelector('#price').min = HOUSING_TYPES_INFO[type.options[evt.target.options.selectedIndex].value].minCost;
+  });
+}
+
+// Зависимоть количества гостей по умолчанию в зависимости от количества комнат
+var roomCount = notice.querySelector('#room_number');
+var capacity = notice.querySelector('#capacity');
+if (roomCount) {
+  roomCount.addEventListener('change', function (evt) {
+    var selectedValue = roomCount[evt.target.options.selectedIndex].value;
+    selectByValue(capacity, ROOM_PLACES_MAPPING[selectedValue]);
+  });
+}
+
+// проверка формы перед отправкой
+var noticeSubmit = notice.querySelector('.form__submit');
+if (noticeSubmit) {
+  noticeSubmit.addEventListener('click', function () {
+    var isFormCorrect = true;
+    var formInputs = notice.querySelectorAll('input');
+    for (var i = 0; i < formInputs.length; i++) {
+      if (!formInputs[i].validity.valid) {
+        isFormCorrect = false;
+      }
+    }
+    if (isFormCorrect) {
+      notice.querySelector('.setup-notice__form-form').submit();
+    }
+  });
 }
