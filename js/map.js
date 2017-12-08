@@ -17,12 +17,12 @@
   };
   /**
    * Заполнение адреса на основе координат
-   * @param {{umber, number}}coordinates
+   * @param {{number: x, number: y}}coordinates
    */
   var fillAddress = function (coordinates) {
     var address = document.querySelector('#address');
     if (address) {
-      address.value = 'x: ' + coordinates.x + ', y: ' + coordinates.y;
+      address.value = 'x: ' + Math.round(coordinates.x) + ', y: ' + Math.round(coordinates.y);
     }
   };
   /**
@@ -44,7 +44,12 @@
       var arrowPoint = mainPinArrowPoint();
       arrowPoint.x -= shift.x;
       arrowPoint.y -= shift.y;
-      if (arrowPoint.y < 100 || arrowPoint.y > 500) {
+      var mapOverlay = map.querySelector('.map__pinsoverlay');
+      mapOverlay.xLength = {
+        fromX: window.util.getCoords(mapOverlay).left,
+        toX: window.util.getCoords(mapOverlay).left + mapOverlay.offsetWidth
+      };
+      if (arrowPoint.y < 100 || arrowPoint.y > 500 || arrowPoint.x < mapOverlay.xLength.fromX || arrowPoint.x > mapOverlay.xLength.toX) {
         return;
       }
       startPosition = {
