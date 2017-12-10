@@ -64,6 +64,18 @@
     },
     KEYBOARDS: {
       ESC: 27
+    },
+    /**
+     * Определение координат элемента
+     * @param {Element} elem
+     * @return {{top: number, left: number}}
+     */
+    getCoords: function (elem) {
+      var box = elem.getBoundingClientRect();
+      return {
+        top: box.top + pageYOffset,
+        left: box.left + pageXOffset
+      };
     }
   };
 }());

@@ -1,12 +1,30 @@
 'use strict';
 
 (function () {
+  var CAPACITY = {
+    1: {
+      value: '1',
+      text: 'для 1 гостя'
+    },
+    2: {
+      value: '2',
+      text: 'для 2 гостей'
+    },
+    3: {
+      value: '3',
+      text: 'для 3 гостей'
+    },
+    noGuests: {
+      value: '0',
+      text: 'не для гостей'
+    }
+  };
   // Мапинг соответствия количества гостей по умолчанию от количества комнат
-  var ROOM_PLACES_MAPPING = {
-    1: '1',
-    2: '2',
-    3: '3',
-    100: '0'
+  var ROOM_CAPACITY_MAPPING = {
+    1: ['1'],
+    2: ['1', '2'],
+    3: ['1', '2', '3'],
+    100: ['noGuests']
   };
   var notice = document.querySelector('.notice');
   // Зависимоть даты въезда от даты выезда и наоборот
@@ -30,13 +48,18 @@
     });
   }
 
-  // Зависимоть количества гостей по умолчанию в зависимости от количества комнат
+  // Зависимоть количества гостей от количества комнат
   var roomCount = notice.querySelector('#room_number');
   var capacity = notice.querySelector('#capacity');
   if (roomCount) {
     roomCount.addEventListener('change', function (evt) {
-      var selectedValue = roomCount[evt.target.options.selectedIndex].value;
-      window.util.selectByValue(capacity, ROOM_PLACES_MAPPING[selectedValue]);
+      window.util.removeAllElementsFromNode(capacity);
+      ROOM_CAPACITY_MAPPING[roomCount[evt.target.options.selectedIndex].value].forEach(function (item) {
+        var option = document.createElement('option');
+        option.value = CAPACITY[item].value;
+        option.textContent = CAPACITY[item].text;
+        capacity.appendChild(option);
+      });
     });
   }
 
