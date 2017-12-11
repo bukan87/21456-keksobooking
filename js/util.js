@@ -46,12 +46,11 @@
      * @param {string} value значение
      */
     selectByValue: function (select, value) {
-      for (var i = 0; i < select.options.length; i++) {
-        if (select[i].value === value) {
+      [].forEach.call(select.options, function (item, i) {
+        if (item.value === value) {
           select.options.selectedIndex = i;
-          break;
         }
-      }
+      });
     },
     /**
      * Удаление всех дочерних элементов у ноды

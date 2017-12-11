@@ -96,14 +96,18 @@
   var mapPins = map.querySelector('.map__pins');
   if (mapPins) {
     mapPins.addEventListener('click', function (evt) {
-      var pressedButton = evt.target.parentNode;
+      var pressedButton;
+      if (evt.target.tagName.toLowerCase() === 'button') {
+        pressedButton = evt.target;
+      } else {
+        pressedButton = evt.target.parentNode;
+      }
       var buttons = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
       for (var i = 0; i < buttons.length; i++) {
-        if (evt.target === buttons[i].childNodes[0]) {
+        if (evt.target === buttons[i].childNodes[0] || evt.target === buttons[i]) {
           window.pin.deactivateActiveButtons();
           window.pin.activateButton(pressedButton);
-          window.card.fillAdCard(window.data.similarAds[i]);
-          window.card.showAdCard();
+          window.showCard(window.data.similarAds[i]);
           break;
         }
       }
