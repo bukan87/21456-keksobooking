@@ -75,6 +75,30 @@
         top: box.top + pageYOffset,
         left: box.left + pageXOffset
       };
+    },
+    /**
+     * Вывод текста сообщения
+     * @param {string} message текс сообщения
+     */
+    onError: function (message) {
+      var popup = document.querySelector('#message-window');
+      var onCloseClick = function () {
+        if (popup) {
+          popup.style.display = 'none';
+          popupClose.removeEventListener('click', onCloseClick);
+        }
+      };
+      if (popup) {
+        var messageBox = popup.querySelector('.message');
+        if (messageBox) {
+          messageBox.textContent = message;
+        }
+        popup.style.display = 'block';
+        var popupClose = popup.querySelector('.close');
+        if (popupClose) {
+          popupClose.addEventListener('click', onCloseClick);
+        }
+      }
     }
   };
 }());

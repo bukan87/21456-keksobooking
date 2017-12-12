@@ -4,6 +4,8 @@
   var IMG_WIDTH = 40;
   var IMG_HEIGHT = 40;
   var ARROW_HEIGHT = 18;
+  var ADS_COUNT = 8;
+  var ads = [];
   /**
    * Создание кнопки похожего объявления на основе объявления
    * @param {Object} ad объявление
@@ -22,20 +24,30 @@
     button.appendChild(img);
     return button;
   };
+  /**
+   * Разбор ответа при запросе объявлений
+   * @param {Object} response ответа от сервера
+   */
+  var onLoadAds = function (response) {
+    var mapPins = document.querySelector('.map__pins');
+    var fragment = document.createDocumentFragment();
+    response.forEach(function (item) {
+      if (ads.length <= ADS_COUNT) {
+        ads.push(item);
+        fragment.appendChild(createButton(item));
+      }
+    });
+    mapPins.appendChild(fragment);
+  };
   window.pin = {
     PIN_WIDTH: 40,
     PIN_HEIGHT: IMG_HEIGHT + ARROW_HEIGHT,
+    ads: ads,
     /**
-     * Создание кнопок на основе массива объявлений
-     * @param {Element} context место, куда необходимо добавить кнопки
-     * @param {Array} ads массив объявлений
+     * Загрузка и заполнение карты пинами объявлений
      */
-    generateButtonsByAds: function (context, ads) {
-      var fragment = document.createDocumentFragment();
-      for (var i = 0; i < ads.length; i++) {
-        fragment.appendChild(createButton(ads[i]));
-      }
-      context.appendChild(fragment);
+    fillMapPin: function () {
+      window.backend.load(onLoadAds, window.util.onError);
     },
     /**
      * Активация кнопки
