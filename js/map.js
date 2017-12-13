@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var SIMILAR_ADS_COUNT = 8;
   /**
    * Определение позиции стрелки у главного пина
    * @return {{number, number}} координаты конца стрелки
@@ -73,8 +72,7 @@
    */
   var onMapPinMainMouseUp = function () {
     map.classList.remove('map--faded');
-    window.data.similarAds = window.data.createRandomAds(SIMILAR_ADS_COUNT);
-    window.pin.generateButtonsByAds(map.querySelector('.map__pins'), window.data.similarAds);
+    window.pin.fillMapPin();
     var noticeForm = document.querySelector('.notice__form');
     noticeForm.classList.remove('notice__form--disabled');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
@@ -107,7 +105,7 @@
         if (evt.target === buttons[i].childNodes[0] || evt.target === buttons[i]) {
           window.pin.deactivateActiveButtons();
           window.pin.activateButton(pressedButton);
-          window.showCard(window.data.similarAds[i]);
+          window.showCard(window.pin.ads[i]);
           break;
         }
       }

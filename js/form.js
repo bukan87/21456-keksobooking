@@ -22,7 +22,7 @@
   var TIME_MAPPING = {
     '12:00': '12:00',
     '13:00': '13:00',
-    '14:00': '14:00',
+    '14:00': '14:00'
   };
   // Мапинг соответствия количества гостей по умолчанию от количества комнат
   var ROOM_CAPACITY_MAPPING = {
@@ -74,6 +74,29 @@
       select.appendChild(option);
     });
   };
+  var resetFormToDefault = function () {
+    var title = notice.querySelector('#title');
+    if (title) {
+      title.value = '';
+    }
+    type.value = 'flat';
+    price.value = 1000;
+    price.min = 1000;
+    timein.value = '12:00';
+    timeout.value = '12:00';
+    roomCount.value = '1';
+    updateSelect(capacity, ROOM_CAPACITY_MAPPING[roomCount.value]);
+    var description = notice.querySelector('#description');
+    if (description) {
+      description.value = '';
+    }
+    var features = notice.querySelectorAll('.form__element input');
+    if (features) {
+      features.forEach(function (item) {
+        item.checked = false;
+      });
+    }
+  };
   var notice = document.querySelector('.notice');
   // Зависимоть даты въезда от даты выезда и наоборот
   var timein = notice.querySelector('#timein');
@@ -97,16 +120,20 @@
   // проверка формы перед отправкой
   var noticeSubmit = notice.querySelector('.form__submit');
   if (noticeSubmit) {
-    noticeSubmit.addEventListener('click', function () {
+    noticeSubmit.addEventListener('click', function (evt) {
       var isFormCorrect = true;
       var formInputs = notice.querySelectorAll('input');
       formInputs.forEach(function (item) {
-        if (item.validity.valid) {
+        if (!item.validity.valid) {
           isFormCorrect = false;
         }
       });
       if (isFormCorrect) {
-        notice.querySelector('.setup-notice__form-form').submit();
+        var form = notice.querySelector('.notice__form');
+        if (form) {
+          window.backend.save(new FormData(form), resetFormToDefault, window.util.onError);
+          evt.preventDefault();
+        }
       }
     });
   }
