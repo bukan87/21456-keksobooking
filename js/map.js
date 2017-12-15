@@ -105,11 +105,12 @@
         if (evt.target === buttons[i].childNodes[0] || evt.target === buttons[i]) {
           window.pin.deactivateActiveButtons();
           window.pin.activateButton(pressedButton);
-          window.showCard(window.pin.ads[i]);
+          window.showCard(window.pin.getAd(i));
           break;
         }
       }
     });
+    // mapPins.addEventListener('')
   }
   map.insertBefore(window.card.adCardNode, map.querySelector('.map__filters-container'));
   mainPin.addEventListener('mouseup', onMapPinMainMouseUp);
