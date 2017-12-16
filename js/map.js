@@ -110,7 +110,6 @@
         }
       }
     });
-    // mapPins.addEventListener('')
   }
   map.insertBefore(window.card.adCardNode, map.querySelector('.map__filters-container'));
   mainPin.addEventListener('mouseup', onMapPinMainMouseUp);

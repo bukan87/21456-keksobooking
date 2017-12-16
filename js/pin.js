@@ -4,12 +4,13 @@
   var IMG_WIDTH = 40;
   var IMG_HEIGHT = 40;
   var ARROW_HEIGHT = 18;
-  var MAX_ADS_COUNT = 5;
+  var MAX_ADS_COUNT = 3;
   var ads = [];
   var filter = {
     features: []
   };
   var filterContainer = document.querySelector('.map__filters-container');
+  var pinFromServer;
   /**
    * Создание кнопки похожего объявления на основе объявления
    * @param {Object} ad объявление
@@ -64,28 +65,33 @@
    * @param {Object} response ответа от сервера
    */
   var onLoadAds = function (response) {
-    var mapPins = document.querySelector('.map__pins');
-    var fragment = document.createDocumentFragment();
-    if (filter) {
-      ads = response.filter(checkPinByFilter).slice(0, MAX_ADS_COUNT);
-    } else {
-      ads = response.slice(0, MAX_ADS_COUNT);
-    }
-    ads.forEach(function (item) {
-      fragment.appendChild(createButton(item));
-    });
-    // Удалим старые кнопки
-    window.card.hideAdCard();
-    while (mapPins.childElementCount > 2) {
-      mapPins.removeChild(mapPins.lastElementChild);
-    }
-    mapPins.appendChild(fragment);
+    pinFromServer = response;
+    fillMapPin();
   };
   /**
    * Загрузка и заполнение карты пинами объявлений
    */
   var fillMapPin = function () {
-    window.backend.load(onLoadAds, window.util.onError);
+    if (!pinFromServer) {
+      window.backend.load(onLoadAds, window.util.onError);
+    } else {
+      var mapPins = document.querySelector('.map__pins');
+      var fragment = document.createDocumentFragment();
+      if (filter) {
+        ads = pinFromServer.filter(checkPinByFilter).slice(0, MAX_ADS_COUNT);
+      } else {
+        ads = pinFromServer.slice(0, MAX_ADS_COUNT);
+      }
+      ads.forEach(function (item) {
+        fragment.appendChild(createButton(item));
+      });
+      // Удалим старые кнопки
+      window.card.hideAdCard();
+      while (mapPins.childElementCount > 2) {
+        mapPins.removeChild(mapPins.lastElementChild);
+      }
+      mapPins.appendChild(fragment);
+    }
   };
   /**
    * Добавление события по смене филтра для селектов
