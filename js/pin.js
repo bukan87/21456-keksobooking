@@ -4,7 +4,8 @@
   var IMG_WIDTH = 40;
   var IMG_HEIGHT = 40;
   var ARROW_HEIGHT = 18;
-  var MAX_ADS_COUNT = 3;
+  var MAX_ADS_COUNT = 5;
+  var DEFAULT_ADS_COUNT = 3;
   var ads = [];
   var filter = {
     features: []
@@ -66,21 +67,25 @@
    */
   var onLoadAds = function (response) {
     pinFromServer = response;
-    fillMapPin();
+    fillMapPin(true);
   };
   /**
    * Загрузка и заполнение карты пинами объявлений
+   * @param {boolean} isFirstLoad
    */
-  var fillMapPin = function () {
+  var fillMapPin = function (isFirstLoad) {
     if (!pinFromServer) {
       window.backend.load(onLoadAds, window.util.onError);
     } else {
       var mapPins = document.querySelector('.map__pins');
       var fragment = document.createDocumentFragment();
       if (filter) {
-        ads = pinFromServer.filter(checkPinByFilter).slice(0, MAX_ADS_COUNT);
+        ads = pinFromServer.filter(checkPinByFilter);
+      }
+      if (isFirstLoad) {
+        ads = ads.slice(0, DEFAULT_ADS_COUNT);
       } else {
-        ads = pinFromServer.slice(0, MAX_ADS_COUNT);
+        ads = ads.slice(0, MAX_ADS_COUNT);
       }
       ads.forEach(function (item) {
         fragment.appendChild(createButton(item));
@@ -94,7 +99,7 @@
     }
   };
   /**
-   * Добавление события по смене филтра для селектов
+   * Добавление события по смене фильтра для селектов
    * @param {string} id ид селекта, на который нужно наложить событие
    * @param {string} filterName название поля в фильтре
    */

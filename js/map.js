@@ -72,7 +72,7 @@
    */
   var onMapPinMainMouseUp = function () {
     map.classList.remove('map--faded');
-    window.pin.fillMapPin();
+    window.pin.fillMapPin(true);
     var noticeForm = document.querySelector('.notice__form');
     noticeForm.classList.remove('notice__form--disabled');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
