@@ -72,7 +72,7 @@
    */
   var onMapPinMainMouseUp = function () {
     map.classList.remove('map--faded');
-    window.pin.fillMapPin();
+    window.pin.fillMapPin(true);
     var noticeForm = document.querySelector('.notice__form');
     noticeForm.classList.remove('notice__form--disabled');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
@@ -105,7 +105,7 @@
         if (evt.target === buttons[i].childNodes[0] || evt.target === buttons[i]) {
           window.pin.deactivateActiveButtons();
           window.pin.activateButton(pressedButton);
-          window.showCard(window.pin.ads[i]);
+          window.showCard(window.pin.getAd(i));
           break;
         }
       }

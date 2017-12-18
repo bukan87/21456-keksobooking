@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_INTERVAL = 500;
+  var debounceLastTimeout;
   window.util = {
     /**
      * Генерация случайного числа в диапозоне
@@ -99,6 +101,16 @@
           popupClose.addEventListener('click', onCloseClick);
         }
       }
+    },
+    /**
+     * Устранение "дребезга"
+     * @param {Function} fun
+     */
+    debounce: function (fun) {
+      if (debounceLastTimeout) {
+        window.clearTimeout(debounceLastTimeout);
+      }
+      debounceLastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
     }
   };
 }());
