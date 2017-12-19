@@ -14,7 +14,7 @@
     }
     element1.addEventListener('change', function (evt) {
       var element2Value;
-      if (element1.tagName.toLowerCase() === 'select') {
+      if (element1.tagName === 'SELECT') {
         element2Value = dataMapping[evt.target.options[evt.target.options.selectedIndex].value];
       } else {
         element2Value = dataMapping[evt.target.value];

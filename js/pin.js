@@ -5,7 +5,7 @@
   var IMG_HEIGHT = 40;
   var ARROW_HEIGHT = 18;
   var MAX_ADS_COUNT = 5;
-  var DEFAULT_ADS_COUNT = 3;
+  var DEFAULT_ADS_COUNT = 5;
   var ads = [];
   var filter = {
     features: []
@@ -152,9 +152,9 @@
     deactivateActiveButtons: function () {
       var activeButtons = document.querySelectorAll('.map__pin--active');
       if (activeButtons) {
-        for (var i = 0; i < activeButtons.length; i++) {
-          activeButtons[i].classList.remove('map__pin--active');
-        }
+        activeButtons.forEach(function (item) {
+          item.classList.remove('map__pin--active');
+        });
       }
     },
     /**

@@ -72,9 +72,9 @@
       adCardNode.classList.add('hidden');
       var activeButtons = document.querySelectorAll('.map__pin--active');
       if (activeButtons) {
-        for (var i = 0; i < activeButtons.length; i++) {
-          activeButtons[i].classList.remove('map__pin--active');
-        }
+        activeButtons.forEach(function (item) {
+          item.classList.remove('map__pin--active');
+        });
       }
       document.removeEventListener('keydown', onAdCardEscPress);
     },

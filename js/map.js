@@ -95,7 +95,7 @@
   if (mapPins) {
     mapPins.addEventListener('click', function (evt) {
       var pressedButton;
-      if (evt.target.tagName.toLowerCase() === 'button') {
+      if (evt.target.tagName === 'BUTTON') {
         pressedButton = evt.target;
       } else {
         pressedButton = evt.target.parentNode;
