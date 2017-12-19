@@ -135,8 +135,6 @@
     });
   }
   window.pin = {
-    PIN_WIDTH: 40,
-    PIN_HEIGHT: IMG_HEIGHT + ARROW_HEIGHT,
     /**
      * Загрузка и заполнение карты пинами объявлений
      */

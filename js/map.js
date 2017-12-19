@@ -8,7 +8,7 @@
   var mainPinArrowPoint = function () {
     var ARROW_HEIGHT = 22;
     var BUTTON_SIZE = 65;
-    var pinCoordinate = window.util.getCoords(mainPin);
+    var pinCoordinate = window.util.getCoordinates(mainPin);
     return {
       x: pinCoordinate.left + BUTTON_SIZE / 2,
       y: pinCoordinate.top + (BUTTON_SIZE + ARROW_HEIGHT)
@@ -45,8 +45,8 @@
       arrowPoint.y -= shift.y;
       var mapOverlay = map.querySelector('.map__pinsoverlay');
       mapOverlay.xLength = {
-        fromX: window.util.getCoords(mapOverlay).left,
-        toX: window.util.getCoords(mapOverlay).left + mapOverlay.offsetWidth
+        fromX: window.util.getCoordinates(mapOverlay).left,
+        toX: window.util.getCoordinates(mapOverlay).left + mapOverlay.offsetWidth
       };
       if (arrowPoint.y < 100 || arrowPoint.y > 500 || arrowPoint.x < mapOverlay.xLength.fromX || arrowPoint.x > mapOverlay.xLength.toX) {
         return;
