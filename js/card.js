@@ -8,12 +8,12 @@
    */
   var fillFeatures = function (context, features) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < features.length; i++) {
+    features.forEach(function (item) {
       var liElement = document.createElement('li');
       liElement.classList.add('feature');
-      liElement.classList.add('feature--' + features[i]);
+      liElement.classList.add('feature--' + item);
       fragment.appendChild(liElement);
-    }
+    });
     window.util.removeAllElementsFromNode(context);
     context.appendChild(fragment);
   };

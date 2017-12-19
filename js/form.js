@@ -74,6 +74,9 @@
       select.appendChild(option);
     });
   };
+  /**
+   * Обновление поле формы к значениям по умолчанию
+   */
   var resetFormToDefault = function () {
     var title = notice.querySelector('#title');
     if (title) {
